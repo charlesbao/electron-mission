@@ -1,1 +1,18 @@
-[{"hash":"2641efaa01fa7a3b0296b7cd9773ddb5","trueName":"test2.tar","chunkSize":2097152,"length":18,"size":37088768,"data":1455602365898,"download":["test2.tar.0","test2.tar.1","test2.tar.10","test2.tar.11","test2.tar.12","test2.tar.13","test2.tar.14","test2.tar.15","test2.tar.16","test2.tar.17","test2.tar.2","test2.tar.3","test2.tar.4","test2.tar.5","test2.tar.6","test2.tar.7","test2.tar.8","test2.tar.9"],"baseName":"test2","thePath":"tmp/2641efaa01fa7a3b0296b7cd9773ddb5","playTime":false,"complete":true}]
+{
+  "IMG_1604.JPG":{
+    "hash": "9e36ba7fb52e023230ac10f35277e765",
+    "chunkSize": 2097152,
+    "length": 2,
+    "size": 2174632,
+    "date": 1467195680427,
+    "trueName":"IMG_1604.JPG"
+  },
+  "IMG_1603.JPG":{
+    "hash": "7bbc122429d0feda873853451685cf89",
+    "chunkSize": 2097152,
+    "length": 1,
+    "size": 1789883,
+    "date": 1467200332129,
+    "trueName":"IMG_1603.JPG"
+  }
+}

@@ -5,7 +5,7 @@ const assetsPath = Path.join(rootPath,'assets');
 
 const Constants = {
     URL:'http://127.0.0.1:8320',
-    DOWNLOAD_URL:this.URL + '/tmp',
+    DOWNLOAD_URL:'http://127.0.0.1:8320/tmp/',
 
     ARRAY_NULL:[],
 

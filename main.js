@@ -1,8 +1,14 @@
 const electron = require('electron');
 const {ipcMain} = require('electron');
+const Url = require('url');
+const Path = require('path');
+
+const Constants = require('./utils/constants');
+
+var ipcRenderObject;
 
 // Module to control application life.
-const app = electron.app
+const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
 
@@ -27,6 +33,39 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null
   })
+
+  mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
+    // Set the save path, making Electron not to prompt a save dialog.
+
+    item.setSavePath(ipcRenderObject.path)
+
+    item.on('updated', (event, state) => {
+      if (state === 'interrupted') {
+        console.log('Download is interrupted but can be resumed')
+      } else if (state === 'progressing') {
+        if (item.isPaused()) {
+          console.log('Download is paused')
+        } else {
+          console.log(`Received bytes: ${item.getReceivedBytes()}`)
+        }
+      }
+    })
+    item.once('done', (event, state) => {
+      if (state === 'completed') {
+        ipcRenderObject.ipcSender.send('download', {
+          err:false,
+          name:item.getFilename(),
+          hash:ipcRenderObject.hash
+        });
+      } else {
+        ipcRenderObject.ipcSender.send('download', {
+          err:true,
+          name:item.getFilename(),
+          hash:ipcRenderObject.hash
+        });
+      }
+    })
+  });
 }
 
 // This method will be called when Electron has finished
@@ -63,3 +102,15 @@ ipcMain.on('synchronous-message', (event, arg) => {
   console.log(arg);  // prints "ping"
   event.returnValue = 'pong';
 });
+
+ipcMain.on('download', (event, arg) => {
+  let theUrl = arg['url'];
+  mainWindow.webContents.downloadURL(theUrl);
+  ipcRenderObject = {
+    ipcSender:event.sender,
+    hash:arg['hash'],
+    path:arg['path']
+  };
+
+})
+

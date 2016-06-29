@@ -1,5 +1,7 @@
 const io = require('socket.io-client');
 const api = require('./api');
+const {ipcRenderer} = require('electron');
+
 const url = 'http://127.0.0.1:8320';
 
 let Socket = {
@@ -30,8 +32,6 @@ let Socket = {
     Socket.destroy();
     Socket.init(url,id)
   },
-
-
   destroy:function(){
     Socket.socket.removeAllListeners();
     Socket.socket = null;
@@ -48,7 +48,7 @@ let Socket = {
 };
 
 function initSocket(socket) {
-  console.log(socket)
+  console.log(socket);
   socket.on('connect', function () {
 
     socket.emit('who', {IM: 'client', ID: Socket.id });
@@ -58,8 +58,11 @@ function initSocket(socket) {
   socket.on('welcome', function (data) {
     //输出欢迎文字
     console.log(data.content)
+    Socket.mission = api.getMissions()
+
     api.checkFolder();
-    Socket.mission = api.getMission()
+    api.compileMissions();
+
   });
   socket.on('reconnect', function() {
     console.log("reconnect");
@@ -79,7 +82,19 @@ function initSocket(socket) {
     Socket.id = content['id'] || Socket.id;
     Socket.url = content['url'] || Socket.url;
     Socket.reInit()
+  });
+
+  socket.on('pushToClient',function(data){
+    socket.emit('clientRecv', {
+      IM:'client',
+      ID:Socket.id
+    });
+    api.pushMission(data)
   })
+
+  ipcRenderer.on('download', (event, arg) => {
+    api.downloadMission(arg['hash'],arg['name'],arg['err'])
+  });
 }
 
 module.exports = Socket;
