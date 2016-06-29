@@ -1,18 +1,17 @@
 let tar = require("tar");
 let fs = require('fs');
 let Path = require('path');
-let options = process.argv;
 
 let child = {
-    extractTar:function (trueName){
+    extractTar:function (thePath,trueName){
 
         let tarName = trueName + '.tar';
 
-        let extractor = tar.Extract({path: './files'})
+        let extractor = tar.Extract({path: thePath})
             .on('error', onError)
             .on('end', onEnd);
 
-        fs.createReadStream('./files/'+tarName)
+        fs.createReadStream(Path.join(thePath,tarName))
             .on('error', onError)
             .pipe(extractor);
 
@@ -20,11 +19,23 @@ let child = {
             console.error('An error occurred:', err)
         }
         function onEnd() {
-            fs.unlinkSync('./files/'+trueName)
+            fs.unlinkSync(Path.join(thePath,tarName))
             console.log('Extracted!')
         }
     }
 };
 
+;(function(){
+    let options = process.argv;
+    switch (options[2]){
+        case 'extractTar':
+            let thePath = options[3];
+            let trueName = options[4];
+            child.extractTar(thePath,trueName)
+            break;
+        default:
+            break;
 
-module.exports = child;
+    }
+})(process.argv);
+
