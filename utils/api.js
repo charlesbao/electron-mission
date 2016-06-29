@@ -35,7 +35,10 @@ function compile(AllMission){
         for (let i = 0; i < files.length; i++) {
             //如果节目状态显示未完成，则进行下步操作
             if (trueName == files[i]) {
-                exist = true;
+                let theFile = Path.join(Constants.FILES_FOLDER,files[i]);
+                if(fs.lstatSync(theFile).size == AllMission[trueName]['size']){
+                    exist = true;
+                }
                 break;
             }
         }
@@ -83,6 +86,7 @@ function pushDownloadList(data){
 
 function sendDownload(){
     let downloadDict = api.downloadDict;
+    console.log(isEmptyObject(downloadDict))
     if(isEmptyObject(downloadDict)){
         return finishDownload()
     }else{
@@ -125,9 +129,14 @@ function combineTmp(hash){
     }
     let rep = files[0].split('.');rep.pop();
     let trueName = rep.join('.');
+
     let filePath = Path.join(Constants.FILES_FOLDER,trueName);
     fs.writeFileSync(filePath,Buffer.concat(output));
     deleteFolderRecursive(thePath);
+
+    if(/tar/i.test(rep.pop())){
+        console.log('ok')
+    }
 }
 
 function isEmptyObject (obj){
@@ -145,6 +154,7 @@ let api = {
     },
 
     compileMissions: function(){
+        api.checkFolder();
 
         let AllMission = api.getMissions();
         return compile(AllMission)
@@ -164,7 +174,7 @@ let api = {
                 }
             }
         }
-        sendDownload()
+        setTimeout(sendDownload(),500)
     },
     getMissions: function(){
         if(isEmptyObject(api.allMission)){
@@ -174,9 +184,9 @@ let api = {
     },
     writeMissions: function(mission){
         fs.writeFileSync(Constants.MISSION_PATH,JSON.stringify(mission,null,2));
+        api.allMission = JSON.parse(fs.readFileSync(Constants.MISSION_PATH));
     },
     pushMission: function(data){
-        api.checkFolder();
         //读取数据库，并赋值给全局变量
         let AllMission = api.getMissions();
         //传递到的数据进行赋值

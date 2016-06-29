@@ -83,6 +83,7 @@ function showFileUploadField(){
     }
 
     function addFile(file){
+        console.log(file)
         var fileUpload = $('#fileUpload');
         socket.emit('startPush',{hash:hash,fileName:file.name});
         socket.on('continueDownload',function(data){
@@ -96,7 +97,8 @@ function showFileUploadField(){
                     hash:hash,
                     trueName:file.name,
                     chunkSize:chunkSize,
-                    size:file.size
+                    size:file.size,
+                    type:file.type
                 });
             }else{
                 var size = Math.min(file.size-data.length*chunkSize,chunkSize);
@@ -110,7 +112,8 @@ function showFileUploadField(){
                         size:file.size,
                         chunkSize:chunkSize,
                         hash:hash,
-                        trueName:isEnd
+                        trueName:isEnd,
+                        type:file.type
                     });
                 },500)
 

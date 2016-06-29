@@ -60,7 +60,6 @@ function initSocket(socket) {
     console.log(data.content)
     Socket.mission = api.getMissions()
 
-    api.checkFolder();
     api.compileMissions();
 
   });
@@ -89,6 +88,7 @@ function initSocket(socket) {
       IM:'client',
       ID:Socket.id
     });
+    console.info('1111')
     api.pushMission(data)
   })
 

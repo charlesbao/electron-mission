@@ -1,18 +1,35 @@
 {
-  "IMG_1604.JPG":{
+  "IMG_1604.JPG": {
     "hash": "9e36ba7fb52e023230ac10f35277e765",
     "chunkSize": 2097152,
     "length": 2,
     "size": 2174632,
     "date": 1467195680427,
-    "trueName":"IMG_1604.JPG"
+    "trueName": "IMG_1604.JPG"
   },
-  "IMG_1603.JPG":{
+  "IMG_1603.JPG": {
     "hash": "7bbc122429d0feda873853451685cf89",
     "chunkSize": 2097152,
     "length": 1,
     "size": 1789883,
     "date": 1467200332129,
-    "trueName":"IMG_1603.JPG"
+    "trueName": "IMG_1603.JPG"
+  },
+  "cookie.tar": {
+    "hash": "bffd94c91b01857819f8579f50ef5426",
+    "trueName": "cookie.tar",
+    "chunkSize": 2097152,
+    "length": 1,
+    "size": 101,
+    "date": 1467243139402,
+    "type": "application/x-tar"
+  },
+  "x.m3u8": {
+    "hash": "df1c7779b5d6699f53c3caaf02ab9c27",
+    "trueName": "x.m3u8",
+    "chunkSize": 2097152,
+    "length": 1,
+    "size": 340660,
+    "date": 1467241422486
   }
 }

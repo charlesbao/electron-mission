@@ -36,21 +36,22 @@ function pushService(socket,data){
     fs.readdir(thePath,function(err,files){
         socket.emit('continueDownload', {code:200,length:files.length});
     });
-    if(!!data.trueName){
-        fs.readdir(thePath,function(err,files) {
-            socket.broadcast.emit('pushToClient', {
-                code:200,
-                content:{
-                    hash:data.hash,
-                    trueName:data.trueName,
-                    chunkSize:data.chunkSize,
-                    length:files.length,
-                    size:data.size,
-                    date:new Date().getTime(),
-                }
-            });
-        });
-    }
+    // if(!!data.trueName){
+    //     fs.readdir(thePath,function(err,files) {
+    //         socket.broadcast.emit('pushToClient', {
+    //             code:200,
+    //             content:{
+    //                 hash:data.hash,
+    //                 trueName:data.trueName,
+    //                 chunkSize:data.chunkSize,
+    //                 length:files.length,
+    //                 size:data.size,
+    //                 date:new Date().getTime(),
+    //                 type:data.type
+    //             }
+    //         });
+    //     });
+    // }
 }
 
 function clientService(client){
@@ -144,6 +145,7 @@ exports.sockets = function (socket) {
                     length:files.length,
                     size:data.size,
                     date:new Date().getTime(),
+                    type:data.type
                 }
             });
         });
