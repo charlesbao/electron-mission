@@ -1,7 +1,8 @@
 {
   "client": [
-    "ClientTest1"
+    "ClientTest1",
+    "ClientTest2",
+    "ClientTest3"
   ],
-  "mission": {
-  }
+  "mission": {}
 }

@@ -4,12 +4,6 @@ var Utils = require('../utils')
 var Store = require('../utils/store')
 var Constants = require('../utils/constants')
 
-function checkFolder(){
-    if(!fs.existsSync(Constants.ASSETS_PATH))fs.mkdirSync(Constants.ASSETS_PATH);
-    if(!fs.existsSync(Constants.TMP_FOLDER))fs.mkdirSync(Constants.TMP_FOLDER);
-    if(!fs.existsSync(Constants.FILES_FOLDER))fs.mkdirSync(Constants.FILES_FOLDER);
-}
-
 exports.init = function(){
     Store.initMission()
 };
@@ -38,7 +32,7 @@ exports.sockets = function (socket) {
     });
 
     socket.on('startPush',function(data){
-        checkFolder();
+        Utils.checkFolder();
         var thePath = Path.join(Constants.TMP_FOLDER,data.hash);
         if(!fs.existsSync(thePath)){
             fs.mkdirSync(thePath);
@@ -95,6 +89,21 @@ exports.sockets = function (socket) {
             console.log('disClient',socket.clientID)
         }
     });
+
+    socket.on('clearMission', function(){
+        Store.clearMission();
+        socket.broadcast.emit('pushMission',{
+            code:200,
+            content:{}
+        })
+    })
+
+    socket.on('showField', function(){
+        socket.emit('showField',{
+            '#online':Store.getClient(Constants.CLIENT.ONLINE),
+            '#offline':Store.getClient(Constants.CLIENT.OFFLINE)
+        })
+    })
 };
 
 

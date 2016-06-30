@@ -1,4 +1,5 @@
 var fs = require('fs');
+var Constants = require('./constants');
 // 数组工具类
 exports.minus_Arr = function(arr1,arr2){
     var arr3 = [];
@@ -17,11 +18,11 @@ exports.minus_Arr = function(arr1,arr2){
 }
 
 exports.isEmptyObject = function (obj){
-    return JSON.stringify(obj) == '{}';
+    return obj == null;
 }
 
 
-exports.deleteFolderRecursive = function (path) {
+function deleteFolderRecursive(path) {
     var files = [];
     if( fs.existsSync(path) ) {
         files = fs.readdirSync(path);
@@ -39,4 +40,14 @@ exports.deleteFolderRecursive = function (path) {
         });
         fs.rmdirSync(path);
     }
+};
+
+exports.deleteFolderRecursive = function(path){
+    return deleteFolderRecursive(path)
 }
+
+exports.checkFolder = function(){
+    if(!fs.existsSync(Constants.ASSETS_PATH))fs.mkdirSync(Constants.ASSETS_PATH);
+    if(!fs.existsSync(Constants.TMP_FOLDER))fs.mkdirSync(Constants.TMP_FOLDER);
+    // if(!fs.existsSync(Constants.FILES_FOLDER))fs.mkdirSync(Constants.FILES_FOLDER);
+};

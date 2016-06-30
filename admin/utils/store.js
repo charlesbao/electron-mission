@@ -3,9 +3,9 @@ var Path = require('path')
 var Constants = require('./constants')
 var Utils = require('./index')
 
-var AllMission = {};
-var Client = {};
-var Mission = {};
+var AllMission = null;
+var Client = null;
+var Mission = null;
 
 function getAllMission(){
     if(Utils.isEmptyObject(AllMission)){
@@ -17,14 +17,16 @@ function getAllMission(){
 var store = {
 
     initMission: function(){
-        var AllMission = getAllMission();
+        var Mission = store.getMission();
+
+        Utils.checkFolder();
         fs.readdir(Constants.TMP_FOLDER,function(err,files){
 
             for(var i = 0;i < files.length; i++){
                 var exist = false;
                 if(files[i] == '.DS_Store')continue
-                for(var trueName in AllMission){
-                    if(files[i] == AllMission[trueName]['hash']){
+                for(var trueName in Mission){
+                    if(files[i] == Mission[trueName]['hash']){
                         exist = true;
                     }
                 }
@@ -47,6 +49,15 @@ var store = {
         return Mission
     },
     setClientState: function(theClient,state){
+        if(Utils.isEmptyObject(Client)){
+            var arr = getAllMission().client;
+
+            var dict = {};
+            for(var i in arr){
+                dict[arr[i]] = Constants.CLIENT.OFFLINE
+            }
+            Client = dict;
+        }
         switch (state){
             case Constants.CLIENT.ONLINE:
             case Constants.CLIENT.OFFLINE:
@@ -57,24 +68,27 @@ var store = {
         }
     },
     getClient: function(state){
+
         if(Utils.isEmptyObject(Client)){
-            Client = getAllMission().client;
+            var arr = getAllMission().client;
+
             var dict = {};
-            for(var i in Client){
-                dict[Client[i]] = Constants.CLIENT.OFFLINE
+            for(var i in arr){
+                dict[arr[i]] = Constants.CLIENT.OFFLINE
             }
             Client = dict;
         }
+
         var TypeClient = [];
         switch (state){
-            case 'online':
+            case Constants.CLIENT.ONLINE:
                 for(var key in Client){
                     if(Client[key] == Constants.CLIENT.ONLINE){
                         TypeClient.push(key)
                     }
                 }
                 break;
-            case 'offline':
+            case Constants.CLIENT.OFFLINE:
                 for(var key in Client){
                     if(Client[key] == Constants.CLIENT.OFFLINE){
                         TypeClient.push(key)
@@ -88,6 +102,13 @@ var store = {
                 break;
         }
         return TypeClient
+    },
+    clearMission: function(){
+        var AllMission = getAllMission();
+        AllMission['mission'] = {};
+        fs.writeFileSync(Constants.MISSION_PATH,JSON.stringify(AllMission,null,2));
+        Mission = AllMission['mission']
+        Utils.deleteFolderRecursive(Constants.TMP_FOLDER)
     }
 };
 

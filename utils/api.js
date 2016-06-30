@@ -106,14 +106,14 @@ function sendDownload(){
 
 function finishDownload(){
     let files = fs.readdirSync(Constants.FILES_FOLDER);
-    let allMission = Object.assign({},api.allMission);
     for (let i = 0; i < files.length; i++) {
         let trueName = files[i]
-        if(!allMission[trueName]){
+        if(!api.Mission[trueName]){
             fs.unlinkSync(Path.join(Constants.FILES_FOLDER,files[i]))
         }
     }
     deleteFolderRecursive(Constants.TMP_FOLDER);
+    console.info('finish')
 }
 
 function combineTmp(hash){
@@ -134,12 +134,20 @@ function combineTmp(hash){
 }
 
 function isEmptyObject (obj){
-    return JSON.stringify(obj) == '{}';
+    return obj == null;
 }
 
 let api = {
     downloadDict:{},
-    allMission:{},
+    AllMission:null,
+    Mission:null,
+
+    getAllMission:function (){
+        if(isEmptyObject(api.AllMission)){
+            api.AllMission = JSON.parse(fs.readFileSync(Constants.MISSION_PATH))
+        }
+        return api.AllMission
+    },
 
     checkFolder:function(){
         if(!fs.existsSync(Constants.ASSETS_PATH))fs.mkdirSync(Constants.ASSETS_PATH);
@@ -171,26 +179,24 @@ let api = {
         sendDownload()
     },
     getMissions: function(){
-        if(isEmptyObject(api.allMission)){
-            api.allMission = JSON.parse(fs.readFileSync(Constants.MISSION_PATH));
+        if(isEmptyObject(api.Mission)){
+            api.Mission = api.getAllMission().mission;
         }
-        return api.allMission
+        return api.Mission
     },
     writeMissions: function(mission){
-        fs.writeFileSync(Constants.MISSION_PATH,JSON.stringify(mission,null,2));
-        api.allMission = JSON.parse(fs.readFileSync(Constants.MISSION_PATH));
+        api.AllMission['mission'] = mission;
+        api.Mission = mission;
+        fs.writeFileSync(Constants.MISSION_PATH,JSON.stringify(api.AllMission,null,2));
     },
     pushMission: function(data){
+        api.getAllMission();
         let jsonObj = data.content;
+        console.info('missions',jsonObj)
         api.writeMissions(jsonObj);
         api.compileMissions()
     },
 
-    clearMissions: function(){
-        this.stopMission();
-        api.writeMissions(Constants.ARRAY_NULL);
-        deleteFolderRecursive(Constants.ASSETS_PATH);
-    },
     playMission: function(){
         console.log('play')
     },

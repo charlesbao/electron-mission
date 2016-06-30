@@ -85,6 +85,7 @@ function initSocket(socket) {
     });
     api.pushMission(data)
   });
+  
   ipcRenderer.on('download', (event, arg) => {
     api.downloadMission(arg['hash'],arg['name'],arg['err'])
   });
