@@ -133,23 +133,6 @@ function combineTmp(hash){
     let filePath = Path.join(Constants.FILES_FOLDER,trueName);
     fs.writeFileSync(filePath,Buffer.concat(output));
     deleteFolderRecursive(thePath);
-
-    if(/tar/i.test(rep.pop())){
-        console.info('start child_process');
-        //启动子进程，进行合包，解压操作
-        var exec = require("child_process").exec,
-            ext = exec(`node child.js extractTar ${thePath} ${data['trueName']}`);
-        ext.stdout.on('data', function (data) {console.log(data)});
-        ext.stderr.on('data', function (data) {console.log('warn:' + data)});
-        ext.on('exit', function (code) {
-            data['complete'] = true;
-            fs.writeFileSync('mission.json',JSON.stringify(AllMission));
-            console.info('complete!');
-            //deleteFolderRecursive(thePath);
-            //遍历检查节目
-            return compile(playID)
-        });
-    }
 }
 
 function isEmptyObject (obj){
