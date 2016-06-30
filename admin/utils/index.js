@@ -1,3 +1,4 @@
+var fs = require('fs');
 // 数组工具类
 exports.minus_Arr = function(arr1,arr2){
     var arr3 = [];

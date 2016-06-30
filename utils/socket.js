@@ -13,7 +13,6 @@ let Socket = {
   error:false,
   socket:null,
   downloading:false,
-  mission:[],
 
   init:function(url,id){
 
@@ -57,9 +56,6 @@ function initSocket(socket) {
   socket.on('welcome', function (data) {
     //输出欢迎文字
     console.log(data.content)
-    Socket.mission = api.getMissions()
-
-    api.compileMissions();
 
   });
   socket.on('reconnect', function() {

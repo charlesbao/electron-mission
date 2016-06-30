@@ -11,11 +11,14 @@ function checkFolder(){
 }
 
 exports.init = function(){
+    Store.initMission()
 };
 
 exports.sockets = function (socket) {
 
-    socket.emit('welcome', {content:'welcome to the server'});
+    socket.emit('welcome', {
+        content:'welcome to the server'
+    });
 
     socket.on('who', function (data) {
         switch (data.IM){
@@ -23,6 +26,10 @@ exports.sockets = function (socket) {
                 console.log(Constants.WHO.CLIENT,data.ID);
                 socket.clientID = data.ID;
                 Store.setClientState(socket.clientID,Constants.CLIENT.ONLINE);
+                socket.emit('pushMission', {
+                    code:200,
+                    content:Store.getMission()
+                });
                 break;
             case Constants.WHO.ADMIN:
                 console.log(Constants.WHO.ADMIN,data.ID)

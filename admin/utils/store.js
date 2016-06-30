@@ -16,6 +16,24 @@ function getAllMission(){
 
 var store = {
 
+    initMission: function(){
+        var AllMission = getAllMission();
+        fs.readdir(Constants.TMP_FOLDER,function(err,files){
+
+            for(var i = 0;i < files.length; i++){
+                var exist = false;
+                if(files[i] == '.DS_Store')continue
+                for(var trueName in AllMission){
+                    if(files[i] == AllMission[trueName]['hash']){
+                        exist = true;
+                    }
+                }
+                if(!exist){
+                    Utils.deleteFolderRecursive(Path.join(Constants.TMP_FOLDER,files[i]))
+                }
+            }
+        })
+    },
     setMission: function(key,theMission){
         var AllMission = getAllMission();
         AllMission['mission'][key] = theMission;
