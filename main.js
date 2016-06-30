@@ -42,6 +42,11 @@ function createWindow () {
     item.on('updated', (event, state) => {
       if (state === 'interrupted') {
         console.log('Download is interrupted but can be resumed')
+        return ipcRenderObject.ipcSender.send('download', {
+          err:true,
+          name:item.getFilename(),
+          hash:ipcRenderObject.hash
+        });
       } else if (state === 'progressing') {
         if (item.isPaused()) {
           console.log('Download is paused')
@@ -52,13 +57,13 @@ function createWindow () {
     })
     item.once('done', (event, state) => {
       if (state === 'completed') {
-        ipcRenderObject.ipcSender.send('download', {
+        return ipcRenderObject.ipcSender.send('download', {
           err:false,
           name:item.getFilename(),
           hash:ipcRenderObject.hash
         });
       } else {
-        ipcRenderObject.ipcSender.send('download', {
+        return ipcRenderObject.ipcSender.send('download', {
           err:true,
           name:item.getFilename(),
           hash:ipcRenderObject.hash

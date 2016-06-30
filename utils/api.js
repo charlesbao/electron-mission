@@ -44,7 +44,6 @@ function compile(AllMission){
         }
         if(!exist)pushDownloadList(AllMission[trueName])
     }
-
     console.log('complete mapping');
     sendDownload()
 }
@@ -169,7 +168,7 @@ let api = {
                 }
             }
         }
-        setTimeout(sendDownload(),500)
+        sendDownload()
     },
     getMissions: function(){
         if(isEmptyObject(api.allMission)){
