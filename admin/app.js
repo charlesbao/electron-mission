@@ -12,6 +12,8 @@ app.set('view engine', 'html');
 app.set('views',__dirname + '/public/views');
 app.engine('.html', require('ejs').__express);
 
+routes.init();
+
 app.get('/',routes.index);
 app.get('/tmp/:hash/:name', routes.fileSend);
 io.on('connection', routes.sockets);

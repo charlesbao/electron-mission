@@ -48,7 +48,6 @@ let Socket = {
 };
 
 function initSocket(socket) {
-  console.log(socket);
   socket.on('connect', function () {
 
     socket.emit('who', {IM: 'client', ID: Socket.id });
@@ -83,15 +82,13 @@ function initSocket(socket) {
     Socket.reInit()
   });
 
-  socket.on('pushToClient',function(data){
+  socket.on('pushMission',function(data){
     socket.emit('clientRecv', {
       IM:'client',
       ID:Socket.id
     });
-    console.info('1111')
     api.pushMission(data)
-  })
-
+  });
   ipcRenderer.on('download', (event, arg) => {
     api.downloadMission(arg['hash'],arg['name'],arg['err'])
   });

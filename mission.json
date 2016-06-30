@@ -1,35 +1,20 @@
 {
-  "IMG_1604.JPG": {
-    "hash": "9e36ba7fb52e023230ac10f35277e765",
+  "cookie": {
+    "hash": "e2993f4dfe0d363931137961f032e562",
+    "trueName": "cookie",
     "chunkSize": 2097152,
-    "length": 2,
-    "size": 2174632,
-    "date": 1467195680427,
-    "trueName": "IMG_1604.JPG"
+    "number": 1,
+    "size": 3738,
+    "date": 1467268812506,
+    "type": ""
   },
-  "IMG_1603.JPG": {
-    "hash": "7bbc122429d0feda873853451685cf89",
+  "next.txt": {
+    "hash": "366657bb82d985356ae3bb56c07789d8",
+    "trueName": "next.txt",
     "chunkSize": 2097152,
-    "length": 1,
-    "size": 1789883,
-    "date": 1467200332129,
-    "trueName": "IMG_1603.JPG"
-  },
-  "cookie.tar": {
-    "hash": "bffd94c91b01857819f8579f50ef5426",
-    "trueName": "cookie.tar",
-    "chunkSize": 2097152,
-    "length": 1,
-    "size": 101,
-    "date": 1467243139402,
-    "type": "application/x-tar"
-  },
-  "x.m3u8": {
-    "hash": "df1c7779b5d6699f53c3caaf02ab9c27",
-    "trueName": "x.m3u8",
-    "chunkSize": 2097152,
-    "length": 1,
-    "size": 340660,
-    "date": 1467241422486
+    "number": 1,
+    "size": 385024,
+    "date": 1467275233319,
+    "type": "text/plain"
   }
 }

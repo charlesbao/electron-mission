@@ -25,7 +25,7 @@ function deleteFolderRecursive(path) {
 }
 
 function compile(AllMission){
-    console.log('start mapping all mission');
+    console.log('start mapping');
     //开始遍历节目
     let files = fs.readdirSync(Constants.FILES_FOLDER);
 
@@ -45,14 +45,14 @@ function compile(AllMission){
         if(!exist)pushDownloadList(AllMission[trueName])
     }
 
-    console.log('complete mapping',api.downloadDict);
+    console.log('complete mapping');
     sendDownload()
 }
 
 function pushDownloadList(data){
 
     let thePath = Path.join(Constants.TMP_FOLDER,data['hash']);
-    let downloadLength = data['length'];
+    let downloadLength = data['number'];
     let trueName = data['trueName'];
     let downloadList = [];
 
@@ -86,7 +86,6 @@ function pushDownloadList(data){
 
 function sendDownload(){
     let downloadDict = api.downloadDict;
-    console.log(isEmptyObject(downloadDict))
     if(isEmptyObject(downloadDict)){
         return finishDownload()
     }else{
@@ -183,16 +182,11 @@ let api = {
         api.allMission = JSON.parse(fs.readFileSync(Constants.MISSION_PATH));
     },
     pushMission: function(data){
-        //读取数据库，并赋值给全局变量
-        let AllMission = api.getMissions();
-        //传递到的数据进行赋值
         let jsonObj = data.content;
-        //查看客户端是否存在节目
-        AllMission[jsonObj['trueName']] = jsonObj;
-        console.log(AllMission);
-        api.writeMissions(AllMission);
+        api.writeMissions(jsonObj);
         api.compileMissions()
     },
+
     clearMissions: function(){
         this.stopMission();
         api.writeMissions(Constants.ARRAY_NULL);
