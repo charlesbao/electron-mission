@@ -1,16 +1,23 @@
-var uploadEvent = {
+
+var UploadEvent = {
+    SocketConstants:{
+        START_PUSH:'START_PUSH',
+        CONTINUE_PUSH:'CONTINUE_PUSH',
+        PUSH_ITEMS:'PUSH_ITEMS',
+        END_PUSH:'END_PUSH'
+    },
     chunkSize:null,
     hash:null,
 
     init: function (socket,file,maxThread){
-        if(file.size < uploadEvent.conventToByte(10)){
-            uploadEvent.chunkSize = uploadEvent.conventToByte(2);
+        if(file.size < UploadEvent.conventToByte(10)){
+            UploadEvent.chunkSize = UploadEvent.conventToByte(2);
         }else{
-            uploadEvent.chunkSize = uploadEvent.conventToByte(1);
+            UploadEvent.chunkSize = UploadEvent.conventToByte(1);
         }
         // var fileUpload = $('#fileUpload');
         var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
-            chunks = Math.ceil(file.size / uploadEvent.chunkSize),
+            chunks = Math.ceil(file.size / UploadEvent.chunkSize),
             currentChunk = 0,
             spark = new SparkMD5.ArrayBuffer(),
             fileReader = new FileReader();
@@ -28,9 +35,9 @@ var uploadEvent = {
                 loadNext();
             } else {
                 console.log('finished loading');
-                console.info('computed hash', uploadEvent.hash=spark.end());  // Compute hash
+                console.info('computed hash', UploadEvent.hash=spark.end());  // Compute hash
                 // fileUpload.find('.mask')[0].innerText = '【'+file.name+'】\n正在上传';
-                uploadEvent.addFile(socket,file,maxThread)
+                UploadEvent.addFile(socket,file,maxThread)
             }
         };
 
@@ -39,8 +46,8 @@ var uploadEvent = {
         };
 
         function loadNext() {
-            var start = currentChunk * uploadEvent.chunkSize,
-                end = ((start + uploadEvent.chunkSize) >= file.size) ? file.size : start + uploadEvent.chunkSize;
+            var start = currentChunk * UploadEvent.chunkSize,
+                end = ((start + UploadEvent.chunkSize) >= file.size) ? file.size : start + UploadEvent.chunkSize;
 
             fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
         }
@@ -50,35 +57,35 @@ var uploadEvent = {
     pushItems: function (socket,file,queue,maxThread){
         for(var i in queue){
             var dict = {
-                content: file.slice(queue[i]*uploadEvent.chunkSize,queue[i]*uploadEvent.chunkSize+uploadEvent.chunkSize),
+                content: file.slice(queue[i]*UploadEvent.chunkSize,queue[i]*UploadEvent.chunkSize+UploadEvent.chunkSize),
                 name: `${file.name}.${queue[i]}`,
-                hash: uploadEvent.hash
+                hash: UploadEvent.hash
             };
             if(maxThread == i || i == queue.length - 1) {
                 dict['stop'] = 1;
-                socket.emit('pushItems',dict);
+                socket.emit(UploadEvent.SocketConstants.PUSH_ITEMS,dict);
                 break;
             }else{
-                socket.emit('pushItems',dict);
+                socket.emit(UploadEvent.SocketConstants.PUSH_ITEMS,dict);
             }
         }
     },
     addFile: function (socket,file,maxThread){
 
         var queue = [];
-        var length = Math.ceil(file.size/uploadEvent.chunkSize);
+        var length = Math.ceil(file.size/UploadEvent.chunkSize);
 
         for(var i = 0;i < length; i ++){
             queue.push(i)
         }
 
-        socket.emit('startPush',{
-            hash:uploadEvent.hash,
-            chunkSize:uploadEvent.chunkSize,
+        socket.emit(UploadEvent.SocketConstants.START_PUSH,{
+            hash:UploadEvent.hash,
+            chunkSize:UploadEvent.chunkSize,
             trueName:file.name
         });
 
-        socket.on('continue',function(data){
+        socket.on(UploadEvent.SocketConstants.CONTINUE_PUSH,function(data){
 
             var filesQueue = data.files;
 
@@ -91,13 +98,12 @@ var uploadEvent = {
             }
             // $('#fileUpload').find('.progress')[0].style.width = ((length - queue.length) / length * 300).toString() + 'px';
             if(queue.length){
-                uploadEvent.pushItems(socket,file,queue,maxThread)
+                UploadEvent.pushItems(socket,file,queue,maxThread)
             }else{
-                socket.off('continue')
-                console.log(uploadEvent.chunkSize)
-                socket.emit('endPush',{
-                    hash:uploadEvent.hash,
-                    chunkSize:uploadEvent.chunkSize,
+                socket.off(UploadEvent.SocketConstants.CONTINUE_PUSH)
+                socket.emit(UploadEvent.SocketConstants.END_PUSH,{
+                    hash:UploadEvent.hash,
+                    chunkSize:UploadEvent.chunkSize,
                     number:length,
                     trueName:file.name,
                     size:file.size,
@@ -117,5 +123,5 @@ var uploadEvent = {
 };
 
 function startUpload(socket,file,maxThread){
-    uploadEvent.init(socket,file,maxThread)
+    UploadEvent.init(socket,file,maxThread)
 }

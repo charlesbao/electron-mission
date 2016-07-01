@@ -21,6 +21,25 @@ const Constants = {
     CLIENT:{
         ONLINE:1,
         OFFLINE:0
+    },
+    SOCKET:{
+        ON:{
+            _DISCONNECT:'disconnect',
+
+            WHO:'WHO',
+            START_PUSH:'START_PUSH',
+            END_PUSH:'END_PUSH',
+            PUSH_ITEMS:'PUSH_ITEMS',
+            CLIENT_RECV:'CLIENT_RECV',
+            CLEAR_MISSION:'CLEAR_MISSION'
+        },
+        EMIT:{
+            WELCOME:'WELCOME',
+            PUSH_MISSION:'PUSH_MISSION',
+            SHOW_FIELD:'SHOW_FIELD',
+            CONTINUE_PUSH:'CONTINUE_PUSH',
+
+        }
     }
 };
 

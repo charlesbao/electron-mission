@@ -1,5 +1,24 @@
 var socket = io();
 var dict = {};
+var id = 'root';
+
+const Constants = {
+    IM:'admin',
+    ID:id,
+
+    SOCKET:{
+        ON:{
+            _DISCONNECT:'disconnect',
+            _CONNECT:'connect',
+
+            SHOW_FIELD:'SHOW_FIELD'
+        },
+        EMIT:{
+            WHO:'WHO',
+            CLEAR_MISSION:'CLEAR_MISSION'
+        }
+    }
+};
 
 $(function(){
     initHtml(function(){
@@ -8,15 +27,21 @@ $(function(){
 });
 
 function initHtml(callback){
-    socket.on('connect', function(){
-        console.info('welcome to the server!')
-        socket.emit('who', { IM:'admin',ID:'root' });
-    });
-    socket.on('disconnect', function(){
-        console.log('dis')
-    });
     addTemplateToStorage();
     callback()
+
+    socket.on(Constants.SOCKET.ON._CONNECT, function(){
+        console.info('welcome to the server!');
+        socket.emit(Constants.SOCKET.EMIT.WHO, { IM:Constants.IM,ID:Constants.ID });
+    });
+    socket.on(Constants.SOCKET.ON._DISCONNECT, function(){
+        console.log(Constants.SOCKET.ON._DISCONNECT)
+    });
+    socket.on(Constants.SOCKET.ON.SHOW_FIELD,function(data){
+        for(var key in data){
+            $(key).html(data[key])
+        }
+    })
 }
 
 function addTemplateToStorage(){
@@ -43,16 +68,9 @@ function showFileUploadField(){
         startClear(socket)
     }, false);
 
-    socket.on('showField',function(data){
-        console.log(data)
-        for(var key in data){
-            $(key).html(data[key])
-        }
-    })
-    socket.emit('showField');
 
 }
 
 function startClear(socket){
-    socket.emit('clearMission')
+    socket.emit(Constants.SOCKET.EMIT.CLEAR_MISSION)
 }

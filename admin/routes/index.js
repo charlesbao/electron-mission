@@ -2,7 +2,8 @@ var fs = require('fs');
 var Path = require('path')
 var Utils = require('../utils')
 var Store = require('../utils/store')
-var Constants = require('../utils/constants')
+var Constants = require('../utils/constants');
+var moment = require('moment');
 
 exports.init = function(){
     Store.initMission()
@@ -10,28 +11,38 @@ exports.init = function(){
 
 exports.sockets = function (socket) {
 
-    socket.emit('welcome', {
-        content:'welcome to the server'
+    socket.emit(Constants.SOCKET.EMIT.WELCOME, {
+        content:Constants.SOCKET.EMIT.WELCOME
     });
 
-    socket.on('who', function (data) {
+    socket.on(Constants.SOCKET.ON.WHO, function (data) {
         switch (data.IM){
             case Constants.WHO.CLIENT:
                 console.log(Constants.WHO.CLIENT,data.ID);
                 socket.clientID = data.ID;
                 Store.setClientState(socket.clientID,Constants.CLIENT.ONLINE);
-                socket.emit('pushMission', {
+                socket.emit(Constants.SOCKET.EMIT.PUSH_MISSION, {
                     code:200,
                     content:Store.getMission()
                 });
+                socket.join(Constants.WHO.CLIENT);
+                socket.to(Constants.WHO.ADMIN).emit(Constants.SOCKET.EMIT.SHOW_FIELD,{
+                    '#online':Store.getClient(Constants.CLIENT.ONLINE),
+                    '#offline':Store.getClient(Constants.CLIENT.OFFLINE)
+                });
                 break;
             case Constants.WHO.ADMIN:
-                console.log(Constants.WHO.ADMIN,data.ID)
+                console.log(Constants.WHO.ADMIN,data.ID);
+                socket.join(Constants.WHO.ADMIN);
+                socket.emit(Constants.SOCKET.EMIT.SHOW_FIELD,{
+                    '#online':Store.getClient(Constants.CLIENT.ONLINE),
+                    '#offline':Store.getClient(Constants.CLIENT.OFFLINE)
+                });
                 break;
         }
     });
 
-    socket.on('startPush',function(data){
+    socket.on(Constants.SOCKET.ON.START_PUSH,function(data){
         Utils.checkFolder();
         var thePath = Path.join(Constants.TMP_FOLDER,data.hash);
         if(!fs.existsSync(thePath)){
@@ -44,64 +55,61 @@ exports.sockets = function (socket) {
         }
         
         fs.readdir(thePath,function(err,files){
-            socket.emit('continue', {code:200,files:files});
+            socket.emit(Constants.SOCKET.EMIT.CONTINUE_PUSH, {files:files});
         })
     });
 
-    socket.on('endPush',function(data){
-        console.log('endPush');
+    socket.on(Constants.SOCKET.ON.END_PUSH,function(data){
+        console.log(Constants.SOCKET.ON.END_PUSH);
         Store.setMission(data.trueName,{
             hash: data.hash,
             trueName: data.trueName,
             chunkSize: data.chunkSize,
             number: data.number,
             size: data.size,
-            date: new Date().getTime(),
+            date: moment().format('YYYY-MM-DD HH:mm'),
             type: data.type
         });
-        socket.broadcast.emit('pushMission', {
-            code:200,
+        socket.to(Constants.WHO.CLIENT).emit(Constants.SOCKET.EMIT.PUSH_MISSION, {
             content:Store.getMission()
         });
     });
 
-    socket.on('pushItems',function(data){
+    socket.on(Constants.SOCKET.ON.PUSH_ITEMS,function(data){
         var thePath = Path.join(Constants.TMP_FOLDER,data.hash);
         var theFile = Path.join(thePath,data.name)
         if(!fs.existsSync(theFile)){
-            console.log('download',data.name);
+            console.log(Constants.SOCKET.ON.PUSH_ITEMS,data.name);
             fs.writeFileSync(Path.join(thePath,data.name),data.content);
         }
         if(data['stop']){
             fs.readdir(thePath,function(err,files){
-                socket.emit('continue', {code:200,files:files});
+                socket.emit(Constants.SOCKET.EMIT.CONTINUE_PUSH, {files:files});
             });
         }
     });
 
-    socket.on('clientRecv',function(data){
+    socket.on(Constants.SOCKET.ON.CLIENT_RECV,function(data){
         console.log('Received',data.IM)
     });
 
-    socket.on('disconnect', function () {
+    socket.on(Constants.SOCKET.ON._DISCONNECT, function () {
         if(socket['clientID'] != undefined){
             Store.setClientState(socket.clientID,Constants.CLIENT.OFFLINE)
-            console.log('disClient',socket.clientID)
+
+            socket.to(Constants.WHO.ADMIN).emit(Constants.SOCKET.EMIT.SHOW_FIELD,{
+                '#online':Store.getClient(Constants.CLIENT.ONLINE),
+                '#offline':Store.getClient(Constants.CLIENT.OFFLINE)
+            });
+
+            console.log(Constants.SOCKET.ON._DISCONNECT,socket.clientID)
         }
     });
 
-    socket.on('clearMission', function(){
+    socket.on(Constants.SOCKET.ON.CLEAR_MISSION, function(){
         Store.clearMission();
-        socket.broadcast.emit('pushMission',{
-            code:200,
+        socket.to(Constants.WHO.CLIENT).emit(Constants.SOCKET.EMIT.PUSH_MISSION,{
             content:{}
-        })
-    })
-
-    socket.on('showField', function(){
-        socket.emit('showField',{
-            '#online':Store.getClient(Constants.CLIENT.ONLINE),
-            '#offline':Store.getClient(Constants.CLIENT.OFFLINE)
         })
     })
 };

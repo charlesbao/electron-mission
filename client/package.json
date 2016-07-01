@@ -1,0 +1,42 @@
+{
+  "name": "mission",
+  "description":"mission description",
+  "version":"0.0.1",
+  "author":"Charles.Bao",
+  "main": "main.js",
+  "dependencies": {
+    "moment": "^2.13.0",
+    "socket.io-client": "^1.4.8",
+    "tar": "^2.2.1"
+  },
+  "devDependencies": {
+    "electron-prebuilt": "*"
+  },
+  "pre-commit": [
+    "lint"
+  ],
+  "scripts": {
+    "start": "electron .",
+    "package": "electron-packager ./ --platform=darwin --arch=x64 --ignore --overwrite",
+    "build": "build --platform darwin --arch x64"
+  },
+  "build": {
+    "mac": {
+      "title": "mission electron",
+      "asar": false,
+      "contents": [
+        {
+          "x": 355,
+          "y": 125,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 155,
+          "y": 125,
+          "type": "file"
+        }
+      ]
+    }
+  }
+}
