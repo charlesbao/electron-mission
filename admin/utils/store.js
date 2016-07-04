@@ -1,56 +1,78 @@
 var fs = require('fs');
-var Path = require('path')
-var Constants = require('./constants')
-var Utils = require('./index')
-var low = require('lowdb')
-var moment = require('moment')
+var Path = require('path');
+var Constants = require('./constants');
+var Utils = require('./index');
+var low = require('lowdb');
+var moment = require('moment');
 
-var MISSION = low(Constants.DB).get('MISSION');
-var CLIENT = low(Constants.DB).get('CLIENT');
+var MISSION = null;
+var CLIENT = null;
 
 var store = {
 
     initMission: function(){
 
-        var Mission = MISSION.value();
+        var DB = low(Constants.DB);
+        MISSION = DB.get('MISSION');
+        CLIENT = DB.get('CLIENT');
+
         Utils.checkFolder();
         fs.readdir(Constants.TMP_FOLDER,function(err,files){
 
             for(var i = 0;i < files.length; i++){
                 var exist = false;
-                if(files[i] == '.DS_Store')continue
-                for(var trueName in Mission){
-                    if(files[i] == Mission[trueName]['hash']){
+                if(files[i] == '.DS_Store'){
+                    fs.unlinkSync(Path.join(Constants.TMP_FOLDER,'.DS_Store'));
+                    continue;
+                }
+                MISSION.map('hash').value().forEach(function(each){
+                    if(files[i] == each){
                         exist = true;
                     }
-                }
+                });
                 if(!exist){
                     Utils.deleteFolderRecursive(Path.join(Constants.TMP_FOLDER,files[i]))
                 }
             }
         })
     },
-    setMission: function(key,theMission){
-        MISSION.push(theMission);
-        return MISSION.getMission()
+
+
+
+    pushMission: function(theMission){
+        MISSION.push(theMission).value();
+        MISSION = low(Constants.DB).get('MISSION');
     },
     getMission:function(){
-        MISSION = low(Constants.DB).get('MISSION');
-        return Mission.value()
+        return MISSION.value()
     },
+    removeMission: function(hash){
+        MISSION.remove({ HASH: hash }).value();
+        MISSION = low(Constants.DB).get('MISSION');
+    },
+
+
     setClientState: function(theClient,state){
         switch (state){
             case Constants.CLIENT.ONLINE:
-                CLIENT.find(theClient).assign({
-                    STATE: Constants.CLIENT.ONLINE,
-                    ONLINE_DATE:moment().format('YYYY-MM-DD HH:mm')
-                });
+                if(CLIENT.find({name:theClient}).value() != undefined){
+                    CLIENT.find({name:theClient}).assign({
+                        state: Constants.CLIENT.ONLINE,
+                        onlineDate:moment().format('YYYY-MM-DD HH:mm:ss')
+                    }).value();
+                }else{
+                    CLIENT.push({
+                        name: theClient,
+                        state: Constants.CLIENT.ONLINE,
+                        onlineDate:moment().format('YYYY-MM-DD HH:mm:ss')
+                    }).value();
+                }
                 break;
             case Constants.CLIENT.OFFLINE:
-                CLIENT.find(theClient).assign({
-                    STATE: Constants.CLIENT.OFFLINE,
-                    OFFLINE_DATE:moment().format('YYYY-MM-DD HH:mm')
-                });
+                CLIENT.find({name:theClient}).assign({
+                    state: Constants.CLIENT.OFFLINE,
+                    offlineDate:moment().format('YYYY-MM-DD HH:mm:ss')
+                }).value();
                 break;
             default:
                 break;
@@ -59,20 +81,27 @@ var store = {
     getClient: function(state){
         switch (state){
             case Constants.CLIENT.ONLINE:
-                return CLIENT.filter({STATE: Constants.CLIENT.ONLINE}).map('NAME').value();
+                return CLIENT.filter({state: Constants.CLIENT.ONLINE}).map('name').value();
             case Constants.CLIENT.OFFLINE:
-                return CLIENT.filter({STATE: Constants.CLIENT.OFFLINE}).map('NAME').value();
+                return CLIENT.filter({state: Constants.CLIENT.OFFLINE}).map('name').value();
             default:
-                return CLIENT.map('NAME').value()
+                return CLIENT.map('name').value()
         }
     },
+    removeClient: function(name){
+        CLIENT.remove({ name: name }).value();
+        CLIENT = low(Constants.DB).get('CLIENT');
+    },
+
+
     clearMission: function(){
-        var AllMission = getAllMission();
-        AllMission['mission'] = {};
-        low(Constants.MISSION_PATH).set("mission",{});
-        // fs.writeFileSync(Constants.MISSION_PATH,JSON.stringify(AllMission,null,2));
-        Mission = AllMission['mission']
+        low(Constants.DB).set('MISSION',Constants.ARRAY_NULL).value();
+        MISSION = low(Constants.DB).get('MISSION');
         Utils.deleteFolderRecursive(Constants.TMP_FOLDER)
+    },
+    clearClient: function(){
+        low(Constants.DB).set('CLIENT',Constants.ARRAY_NULL).value();
+        CLIENT = low(Constants.DB).get('CLIENT');
     }
 };
 

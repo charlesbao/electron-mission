@@ -61,7 +61,7 @@ exports.sockets = function (socket) {
 
     socket.on(Constants.SOCKET.ON.END_PUSH,function(data){
         console.log(Constants.SOCKET.ON.END_PUSH);
-        Store.setMission(data.trueName,{
+        Store.pushMission({
             hash: data.hash,
             trueName: data.trueName,
             chunkSize: data.chunkSize,

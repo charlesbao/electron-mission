@@ -74,7 +74,7 @@ function initSocket(socket) {
       IM:'client',
       ID:Socket.id
     });
-    api.pushMission(data)
+    api.setMission(data.content)
   });
   
   ipcRenderer.on(Constants.IPC.DOWNLOAD, (event, arg) => {

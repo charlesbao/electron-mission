@@ -16,6 +16,7 @@ const Constants = {
     SHOW_FOLDER:Path.join(assetsPath,'show'),
     MISSION_PATH:Path.join(rootPath,'mission.json'),
 
+    DB:Path.join(rootPath,'db'),
     IPC:{
         DOWNLOAD:'DOWNLOAD'
     },

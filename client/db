@@ -1,0 +1,14 @@
+{
+  "MISSION": [
+    {
+      "hash": "df1c7779b5d6699f53c3caaf02ab9c27",
+      "trueName": "x.m3u8",
+      "chunkSize": 2097152,
+      "number": 1,
+      "size": 340660,
+      "date": "2016-07-04 21:45",
+      "type": "audio/mpegurl"
+    }
+  ],
+  "UNFINISHED": []
+}
