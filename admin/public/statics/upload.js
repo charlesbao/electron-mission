@@ -13,7 +13,7 @@ var UploadEvent = {
         if(file.size < UploadEvent.conventToByte(10)){
             UploadEvent.chunkSize = UploadEvent.conventToByte(2);
         }else{
-            UploadEvent.chunkSize = UploadEvent.conventToByte(1);
+            UploadEvent.chunkSize = UploadEvent.conventToByte(5);
         }
         // var fileUpload = $('#fileUpload');
         var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,

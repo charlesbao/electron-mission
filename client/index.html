@@ -8,13 +8,35 @@
             -webkit-user-select: none;
             -webkit-app-region: drag;
         }
-        /*html,body{*/
-            /*background: transparent;*/
-        /*}*/
+        body,html,#frame{
+            width:100%;
+            height:100%;
+            position: absolute;
+            overflow: hidden;
+            margin: 0;
+        }
+        .flow-bar{
+            position: fixed;
+            opacity: 0.3;
+            background: rgba(0,0,0,0.2);
+            z-index: 999;
+            top:0;
+            right:0;
+        }
+        #frame{
+
+        }
     </style>
 </head>
 <body>
-<div id="root"></div>
+<div id="root">
+    <div class="flow-bar">
+        <button id="reload">reload</button>
+        <button id="exit">exit</button>
+    </div>
+
+    <iframe id="frame" frameborder="0" seamless scrolling="no" src=""></iframe>
+</div>
 </body>
 <script>
   require('./render.js')

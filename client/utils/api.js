@@ -2,7 +2,8 @@ const {ipcRenderer} = require('electron');
 const fs = require('fs');
 const Path = require('path');
 const Url = require('url');
-const Constants = require('./Constants');
+const Child = require('./child')
+const Constants = require('./constants');
 
 function deleteFolderRecursive(path) {
     var files = [];
@@ -131,6 +132,11 @@ function combineTmp(hash){
     let filePath = Path.join(Constants.FILES_FOLDER,trueName);
     fs.writeFileSync(filePath,Buffer.concat(output));
     deleteFolderRecursive(thePath);
+    if(/tar/i.test(api.Mission[trueName]['type'])){
+        Child.extractTar(trueName,function(Mission){
+            api.playMission(Mission)
+        })
+    }
 }
 
 function isEmptyObject (obj){
@@ -153,6 +159,7 @@ let api = {
         if(!fs.existsSync(Constants.ASSETS_PATH))fs.mkdirSync(Constants.ASSETS_PATH);
         if(!fs.existsSync(Constants.TMP_FOLDER))fs.mkdirSync(Constants.TMP_FOLDER);
         if(!fs.existsSync(Constants.FILES_FOLDER))fs.mkdirSync(Constants.FILES_FOLDER);
+        if(!fs.existsSync(Constants.SHOW_FOLDER))fs.mkdirSync(Constants.SHOW_FOLDER);
     },
 
     compileMissions: function(){
@@ -197,8 +204,11 @@ let api = {
         api.compileMissions()
     },
 
-    playMission: function(){
-        console.log('play')
+    playMission: function(Mission){
+        var thePath = Path.join(Mission,'index.html');
+        if(fs.existsSync(thePath)){
+            document.getElementById('frame').src = thePath
+        }
     },
     stopMission: function(){
         console.log('stop')

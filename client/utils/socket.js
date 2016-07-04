@@ -9,12 +9,11 @@ let Socket = {
   id:null,
   socket:null,
 
-  init:function(url,id){
+  init:function(id){
 
-    Socket.url = url;
     Socket.id = id;
 
-    Socket.socket = io(url);
+    Socket.socket = io(Socket.url);
     initSocket(Socket.socket);
     console.info('socket started!')
 

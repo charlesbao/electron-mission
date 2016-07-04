@@ -1,11 +1,13 @@
 {
   "name": "mission",
-  "description":"mission description",
-  "version":"0.0.1",
-  "author":"Charles.Bao",
+  "description": "mission description",
+  "version": "0.0.1",
+  "author": "Charles.Bao <hi@charlesbao.com>",
   "main": "main.js",
+  "homepage": "http://www.charlesbao.com",
   "dependencies": {
     "moment": "^2.13.0",
+    "request": "^2.72.0",
     "socket.io-client": "^1.4.8",
     "tar": "^2.2.1"
   },
@@ -17,8 +19,8 @@
   ],
   "scripts": {
     "start": "electron .",
-    "package": "electron-packager ./ --platform=darwin --arch=x64 --ignore --overwrite",
-    "build": "build --platform darwin --arch x64"
+    "package": "electron-packager ./ --platform=linux --arch=ia32 --ignore --overwrite",
+    "build": "build --linux --ia32 deb"
   },
   "build": {
     "mac": {

@@ -1,6 +1,8 @@
 const electron = require('electron');
 const {ipcMain} = require('electron');
-const Menu = electron.Menu
+const Menu = electron.Menu;
+const request = require('request');
+const fs = require('fs');
 
 const Constants = require('./utils/constants');
 
@@ -23,12 +25,14 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     backgroundColor:'#2e2c29',
     title:'mission',
-    width: 800,
+    width: 1200,
     height: 600,
+    kiosk:false,
     alwaysOnTop:false,
     hasShadow:false,
     fullscreen:false,
     titleBarStyle: 'hidden',
+    autoHideMenuBar:true
   })
   // mainWindow.setIgnoreMouseEvents(true)
 
@@ -115,9 +119,8 @@ ipcMain.on('asynchronous-message', (event, arg) => {
   event.sender.send('asynchronous-reply', 'pong');
 });
 
-ipcMain.on('synchronous-message', (event, arg) => {
-  console.log(arg);  // prints "ping"
-  event.returnValue = 'pong';
+ipcMain.on('destroy', (event, arg) => {
+  mainWindow.destroy();
 });
 
 ipcMain.on(Constants.IPC.DOWNLOAD, (event, arg) => {
@@ -128,6 +131,5 @@ ipcMain.on(Constants.IPC.DOWNLOAD, (event, arg) => {
     hash:arg['hash'],
     path:arg['path']
   };
-
 })
 

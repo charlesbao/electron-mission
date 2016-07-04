@@ -1,5 +1,7 @@
 const Socket = require('./utils/socket')
+const View = require('./utils/view');
 
-Socket.init('http://127.0.0.1:8320','ClientTest1');
+View.init();
+Socket.init('ClientTest1');
 
 
