@@ -14,6 +14,8 @@ const Constants = {
     FILES_FOLDER:Path.join(assetsPath,'files'),
     MISSION_PATH:Path.join(rootPath,'mission.json'),
 
+    DB:Path.join(rootPath,'db'),
+
     WHO:{
         CLIENT:'client',
         ADMIN:'admin'
