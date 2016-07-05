@@ -113,7 +113,7 @@ function finishDownload(){
         }
     }
     deleteFolderRecursive(Constants.TMP_FOLDER);
-    console.info('finish')
+    console.info('FINISH')
 }
 
 function combineTmp(hash){
@@ -135,7 +135,6 @@ function combineTmp(hash){
     }else{
         deleteFolderRecursive(thePath);
     }
-
 
     // if(/tar/i.test(MISSION.find({trueName:trueName})['type'])){
     //     Child.extractTar(trueName,function(Mission){
