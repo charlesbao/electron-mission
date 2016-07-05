@@ -22,7 +22,6 @@ exports.sockets = function (socket) {
                 socket.clientID = data.ID;
                 Store.setClientState(socket.clientID,Constants.CLIENT.ONLINE);
                 socket.emit(Constants.SOCKET.EMIT.PUSH_MISSION, {
-                    code:200,
                     content:Store.getMission()
                 });
                 socket.join(Constants.WHO.CLIENT);

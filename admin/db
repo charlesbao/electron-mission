@@ -2,20 +2,10 @@
   "CLIENT": [
     {
       "name": "ClientTest1",
-      "state": 0,
-      "onlineDate": "2016-07-05 09:31:10",
-      "offlineDate": "2016-07-05 09:34:01"
+      "state": 1,
+      "onlineDate": "2016-07-05 12:12:28",
+      "offlineDate": "2016-07-05 12:12:27"
     }
   ],
-  "MISSION": [
-    {
-      "hash": "b34ea7f7acdc0320347940957d87fa49",
-      "trueName": "bt.html",
-      "chunkSize": 2097152,
-      "number": 1,
-      "size": 846,
-      "date": "2016-07-05 09:31",
-      "type": "text/html"
-    }
-  ]
+  "MISSION": []
 }

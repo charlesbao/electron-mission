@@ -5,6 +5,7 @@ const Url = require('url');
 const Child = require('./child')
 const Constants = require('./constants');
 const low = require('lowdb');
+const download = require('download')
 
 function deleteFolderRecursive(path) {
     var files = [];
@@ -87,15 +88,17 @@ function sendDownload(){
     if(UNFINISHED.value().length == 0){
         return finishDownload()
     }else{
-        let Unfinished = UNFINISHED.take(1).value()[0];
+        let Unfinished = api.removeUnfinished();
         let theUrl = Url.resolve(Constants.DOWNLOAD_URL,Unfinished['hash'])+'/'+Unfinished['name'];
-        let thePath = Path.join(Constants.TMP_FOLDER,Unfinished['hash'],Unfinished['name']);
-        console.info(Constants.IPC.DOWNLOAD,Unfinished['name']);
-
-        return ipcRenderer.send(Constants.IPC.DOWNLOAD,{
-            path:thePath,
-            url:theUrl,
-            hash:Unfinished['hash']
+        let thePath = Path.join(Constants.TMP_FOLDER,Unfinished['hash']);
+        console.info('DOWNLOAD',Unfinished['name']);
+        download(theUrl, thePath).then(() => {
+            if(!UNFINISHED.find({hash:Unfinished['hash']}).value())combineTmp(Unfinished['hash']);
+            return sendDownload()
+        }).catch((err)=>{
+            if(err.statusCode == Constants.STATUS_CODE.NOT_FOUND){
+                return sendDownload()
+            }
         });
     }
 }
@@ -105,7 +108,7 @@ function finishDownload(){
     for (let i = 0; i < files.length; i++) {
         let trueName = files[i]
         if(MISSION.find({trueName:trueName}).value() == undefined){
-            console.info('DELETE',trueName)
+            console.info('DELETE',trueName);
             fs.unlinkSync(Path.join(Constants.FILES_FOLDER,trueName))
         }
     }
@@ -115,19 +118,25 @@ function finishDownload(){
 
 function combineTmp(hash){
     let thePath = Path.join(Constants.TMP_FOLDER,hash);
-
     let files = fs.readdirSync(thePath);
-    let output = [];
-    for (let i = 0; i < files.length; i++) {
-        let theFile = Path.join(thePath,files[i]);
-        output.push(fs.readFileSync(theFile));
-    }
-    let rep = files[0].split('.');rep.pop();
-    let trueName = rep.join('.');
 
-    let filePath = Path.join(Constants.FILES_FOLDER,trueName);
-    fs.writeFileSync(filePath,Buffer.concat(output));
-    deleteFolderRecursive(thePath);
+    let Mission = MISSION.find({hash:hash}).value();
+    if(Mission){
+        if(files.length == Mission.number){
+            let output = [];
+            for (let i = 0; i < files.length; i++) {
+                let theFile = Path.join(thePath,files[i]);
+                output.push(fs.readFileSync(theFile));
+            }
+            let filePath = Path.join(Constants.FILES_FOLDER,Mission.trueName);
+            fs.writeFileSync(filePath,Buffer.concat(output));
+            deleteFolderRecursive(thePath);
+        }
+    }else{
+        deleteFolderRecursive(thePath);
+    }
+
+
     // if(/tar/i.test(MISSION.find({trueName:trueName})['type'])){
     //     Child.extractTar(trueName,function(Mission){
     //         api.playMission(Mission)
@@ -150,21 +159,24 @@ let api = {
         api.checkFolder();
         return compile()
     },
-    downloadMission: function(hash,name,err){
-        if(!err){
-            UNFINISHED.remove({name:name}).value();
-            if(UNFINISHED.find({hash:hash}).value() == undefined)
-                combineTmp(hash);
-        }
-        sendDownload()
-    },
     getMissions: function(){
         return MISSION.value()
     },
     setMission: function(missions){
         low(Constants.DB).set('MISSION',missions).value();
         MISSION = low(Constants.DB).get('MISSION');
+        MISSION.map('hash').forEach(function(each){
+            low(Constants.DB).remove({hash:each['hash']}).value()
+        });
+        UNFINISHED = low(Constants.DB).get('UNFINISHED');
         api.compileMissions()
+    },
+
+    removeUnfinished: function(){
+        let Unfinished = UNFINISHED.take(1).value()[0];
+        UNFINISHED.remove(Unfinished).value();
+        UNFINISHED = low(Constants.DB).get('UNFINISHED');
+        return Unfinished
     },
 
     playMission: function(Mission){

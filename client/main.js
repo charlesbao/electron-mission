@@ -1,12 +1,9 @@
 const electron = require('electron');
 const {ipcMain} = require('electron');
 const Menu = electron.Menu;
-const request = require('request');
 const fs = require('fs');
 
 const Constants = require('./utils/constants');
-
-var ipcRenderObject;
 
 // Module to control application life.
 const app = electron.app;
@@ -49,44 +46,6 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null
   })
-
-  mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
-    // Set the save path, making Electron not to prompt a save dialog.
-
-    item.setSavePath(ipcRenderObject.path)
-
-    item.on('updated', (event, state) => {
-      if (state === 'interrupted') {
-        console.log('Download is interrupted but can be resumed')
-        return ipcRenderObject.ipcSender.send('download', {
-          err:true,
-          name:item.getFilename(),
-          hash:ipcRenderObject.hash
-        });
-      } else if (state === 'progressing') {
-        if (item.isPaused()) {
-          console.log('Download is paused')
-        } else {
-          console.log(`Received bytes: ${item.getReceivedBytes()}`)
-        }
-      }
-    })
-    item.once('done', (event, state) => {
-      if (state === 'completed') {
-        return ipcRenderObject.ipcSender.send(Constants.IPC.DOWNLOAD, {
-          err:false,
-          name:item.getFilename(),
-          hash:ipcRenderObject.hash
-        });
-      } else {
-        return ipcRenderObject.ipcSender.send(Constants.IPC.DOWNLOAD, {
-          err:true,
-          name:item.getFilename(),
-          hash:ipcRenderObject.hash
-        });
-      }
-    })
-  });
 }
 
 // This method will be called when Electron has finished
@@ -123,13 +82,4 @@ ipcMain.on('destroy', (event, arg) => {
   mainWindow.destroy();
 });
 
-ipcMain.on(Constants.IPC.DOWNLOAD, (event, arg) => {
-  let theUrl = arg['url'];
-  mainWindow.webContents.downloadURL(theUrl);
-  ipcRenderObject = {
-    ipcSender:event.sender,
-    hash:arg['hash'],
-    path:arg['path']
-  };
-})
 

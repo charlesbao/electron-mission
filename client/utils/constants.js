@@ -17,8 +17,8 @@ const Constants = {
     MISSION_PATH:Path.join(rootPath,'mission.json'),
 
     DB:Path.join(rootPath,'db'),
-    IPC:{
-        DOWNLOAD:'DOWNLOAD'
+    STATUS_CODE:{
+        NOT_FOUND:404
     },
     SOCKET:{
         IM:'client',

@@ -76,10 +76,6 @@ function initSocket(socket) {
     });
     api.setMission(data.content)
   });
-  
-  ipcRenderer.on(Constants.IPC.DOWNLOAD, (event, arg) => {
-    api.downloadMission(arg['hash'],arg['name'],arg['err'])
-  });
 }
 
 module.exports = Socket;

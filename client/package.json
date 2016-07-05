@@ -6,12 +6,12 @@
   "main": "main.js",
   "homepage": "http://www.charlesbao.com",
   "dependencies": {
-    "moment": "^2.13.0",
-    "request": "^2.72.0",
-    "socket.io-client": "^1.4.8",
-    "tar": "^2.2.1",
+    "download": "^5.0.2",
     "lodash": "^4.13.1",
-    "lowdb": "^0.13.1"
+    "lowdb": "^0.13.1",
+    "moment": "^2.13.0",
+    "socket.io-client": "^1.4.8",
+    "tar": "^2.2.1"
   },
   "devDependencies": {
     "electron-prebuilt": "*"
