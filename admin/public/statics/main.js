@@ -38,9 +38,23 @@ function initHtml(callback){
         console.log(Constants.SOCKET.ON._DISCONNECT)
     });
     socket.on(Constants.SOCKET.ON.SHOW_FIELD,function(data){
+        var html;
         for(var key in data){
-            $(key).html(data[key])
+            switch (key){
+                case '#mission':
+                    var arr = []
+                    data[key].forEach(function(each){
+                        arr.push(each.trueName)
+                    });
+                    html = arr.join(',');
+                    break;
+                default:
+                    html = data[key];
+                    break;
+            }
+            $(key).html(html)
         }
+
     })
 }
 

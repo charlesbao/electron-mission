@@ -2,20 +2,20 @@
   "CLIENT": [
     {
       "name": "ClientTest1",
-      "state": 1,
-      "onlineDate": "2016-07-04 21:46:08",
-      "offlineDate": "2016-07-04 21:46:08"
+      "state": 0,
+      "onlineDate": "2016-07-05 09:31:10",
+      "offlineDate": "2016-07-05 09:34:01"
     }
   ],
   "MISSION": [
     {
-      "hash": "df1c7779b5d6699f53c3caaf02ab9c27",
-      "trueName": "x.m3u8",
+      "hash": "b34ea7f7acdc0320347940957d87fa49",
+      "trueName": "bt.html",
       "chunkSize": 2097152,
       "number": 1,
-      "size": 340660,
-      "date": "2016-07-04 19:14",
-      "type": "audio/mpegurl"
+      "size": 846,
+      "date": "2016-07-05 09:31",
+      "type": "text/html"
     }
   ]
 }

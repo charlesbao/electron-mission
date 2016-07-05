@@ -98,6 +98,7 @@ var store = {
         low(Constants.DB).set('MISSION',Constants.ARRAY_NULL).value();
         MISSION = low(Constants.DB).get('MISSION');
         Utils.deleteFolderRecursive(Constants.TMP_FOLDER)
+        return MISSION
     },
     clearClient: function(){
         low(Constants.DB).set('CLIENT',Constants.ARRAY_NULL).value();

@@ -36,7 +36,8 @@ exports.sockets = function (socket) {
                 socket.join(Constants.WHO.ADMIN);
                 socket.emit(Constants.SOCKET.EMIT.SHOW_FIELD,{
                     '#online':Store.getClient(Constants.CLIENT.ONLINE),
-                    '#offline':Store.getClient(Constants.CLIENT.OFFLINE)
+                    '#offline':Store.getClient(Constants.CLIENT.OFFLINE),
+                    '#mission':Store.getMission()
                 });
                 break;
         }
@@ -73,6 +74,9 @@ exports.sockets = function (socket) {
         socket.to(Constants.WHO.CLIENT).emit(Constants.SOCKET.EMIT.PUSH_MISSION, {
             content:Store.getMission()
         });
+        socket.emit(Constants.SOCKET.EMIT.SHOW_FIELD,{
+            '#mission':Store.getMission()
+        });
     });
 
     socket.on(Constants.SOCKET.ON.PUSH_ITEMS,function(data){
@@ -107,10 +111,13 @@ exports.sockets = function (socket) {
     });
 
     socket.on(Constants.SOCKET.ON.CLEAR_MISSION, function(){
-        Store.clearMission();
+        var theMission = Store.clearMission();
         socket.to(Constants.WHO.CLIENT).emit(Constants.SOCKET.EMIT.PUSH_MISSION,{
-            content:{}
-        })
+            content:theMission
+        });
+        socket.emit(Constants.SOCKET.EMIT.SHOW_FIELD,{
+            '#mission':theMission
+        });
     })
 };
 
